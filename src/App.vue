@@ -1,28 +1,52 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <Header 
+      :bombAmount='bombAmount'
+      :isGameOver='isGameOver'
+      :flags='flags'
+    />
+    <Board 
+      :width='width'
+      :bombAmount='bombAmount'
+      @gameOverState='updateState'
+      @flags='updateFlags'
+    />
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Header from './components/Header.vue'
+import Board from './components/Board.vue'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    Header,
+    Board
+  },
+  data() {
+    return {
+      width: 10,
+      bombAmount: 20,
+      isGameOver: false,
+      flags: 0
+    }
+  },
+  methods: {
+    updateState(state) { 
+      this.isGameOver = state;
+    },
+
+    updateFlags(flags) {
+      this.flags = flags;
+    }
+  },
+  created() {
+
   }
 }
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+
 </style>
