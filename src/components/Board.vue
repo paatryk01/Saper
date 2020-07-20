@@ -1,6 +1,5 @@
 <template>
     <div id="Board">
-        <!-- <button class="startButton" @click="startNewGame">New Game</button> -->
         <div class="grid">
             <div class="square"
             v-for="(square, index) in squares"
@@ -28,31 +27,16 @@ export default {
             flags: 0,
             isGameOver: false,
             cells: [],
-            // classesToDelete: ['one', 'two', 'three', 'four', 'bomb', 'flag', 'checked']
+            topEdge: this.width - 1,
+            topLeftCorner: this.width + 1,
+            lastCell: (this.width * this.width) - 1,
+            downEdge: (this.width * this.width) - this.width,
+            downRightCorner: (this.width * this.width) - this.width - 1
         }
     },
     methods: {
 
-        //method for start new game isn't finished yet
-        
-        // startNewGame() {
-        //     for(let i = 0; i < this.cells.length; i++) {
-        //         this.cells[i].classList.remove(...this.classesToDelete)
-        //         this.cells[i].innerText = '';
-        //         this.cells[i].removeAttribute('style'); 
-        //         this.cells[i].removeAttribute('data');
-        //     }
-
-        //     this.isGameOver = false;
-        //     this.flags = 0;
-        //     this.squares = [];
-        //     this.cells = [];
-        //     }
-        //     this.createBoard()
-        //     this.fillCells()
-        // },
-
-        //createBoard creates shuffled array with 'empty' and 'bomb' classes
+        /** createBoard creates shuffled array with 'empty' and 'bomb' classes */
 
         createBoard() {
 
@@ -63,7 +47,7 @@ export default {
             this.squares = [...shuffledArray]
         },
 
-        //fillCells creates an array from elements which contains class 'square' and then invoke addNumbers method
+        /** fillCells creates an array from elements which contains class 'square' and then invoke addNumbers method */
 
         fillCells() {
 
@@ -73,15 +57,15 @@ export default {
             this.addNumbers()
         },
     
-        //clicked method checks if 'square' is undefined, because method is using in two situations:
-        //after click and in this situation 'square' is event.target
-        //in recursion and in this situation 'square' is from checkSquere method
+        /** clicked method checks if 'square' is undefined, because method is using in two situations:
+        after click and in this situation 'square' is event.target
+        in recursion and in this situation 'square' is from checkSquere method
 
-        //method is checking conditions if is game over or 'square' is checkec or has a flag
-        //if square has a 'bomb' class it's game over
-        //in other situation method is getting 'data' attribute - 'total' 
-        //if clicked 'square' isn't empty, method is adding a total number of contacts with bomb and display it
-        //if clicked 'square' is empty, method invokes checkSquare method - recursion
+        method is checking conditions if is game over or 'square' is checkec or has a flag
+        if square has a 'bomb' class it's game over
+        in other situation method is getting 'data' attribute - 'total' 
+        if clicked 'square' isn't empty, method is adding a total number of contacts with bomb and display it
+        if clicked 'square' is empty, method invokes checkSquare method - recursion */
 
         clicked(square) {   
 
@@ -93,26 +77,44 @@ export default {
 
             if(this.isGameOver) return;
             if(square.classList.contains('checked') || square.classList.contains('flag')) return
-            if(square.classList.contains('bomb')) {
-                this.gameOver();
-            } else {
-                let total = square.getAttribute('data');
+            if(square.classList.contains('bomb')) this.gameOver()
 
-                if(total != 0) {
-                    square.classList.add('checked');
-                    if(total == 1) square.classList.add('one');
-                    if(total == 2) square.classList.add('two');
-                    if(total == 3) square.classList.add('three');
-                    if(total == 4) square.classList.add('four');
-                    square.innerHTML = total;
-                    return
-                }
-                this.checkSquare(currentId);
+            let total = square.getAttribute('data');
+
+
+            //  switch(total) {
+            //         case 1:
+            //             square.classList.add('one');
+            //             break;
+            //         case 2:
+            //             square.classList.add('two');
+            //             break;
+            //         case 3: 
+            //             square.classList.add('three');
+            //             break;
+            //         case 4:
+            //             square.classList.add('four');
+            //             break;
+            //         square.innerHTML = total;
+            //         square.classList.add('checked');
+            //         return
+            //     }
+
+
+            const totalClasses = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight'];
+
+            if(total > 0 && total <= totalClasses.length) {
+                square.classList.add('checked');
+                square.classList.add(totalClasses[total-1])
+                square.innerHTML = total;
+                return
             }
+
+            this.checkSquare(currentId);
             square.classList.add('checked');
         },
 
-        //method gameOver checks every cell and show bomb icon if cell contains 'bomb' class
+        /** method gameOver checks every cell and show bomb icon if cell contains 'bomb' class */
 
         gameOver() {   
 
@@ -128,8 +130,8 @@ export default {
             console.log('Game over');
         },
 
-        //method is adding flag and checks if clicked cell has a flag and if is able to add flag (limit is equal to bomb amount)
-        //addFlag calls checkForWin each time the flag is added
+        /** method is adding flag and checks if clicked cell has a flag and if is able to add flag (limit is equal to bomb amount)
+        addFlag calls checkForWin each time the flag is added */
 
         addFlag() {
 
@@ -151,32 +153,32 @@ export default {
             this.$emit('flags', this.flags)
         },
 
-        //method checks contacts with bomb for each 'square' and set attribute 'data' with number of contacts 
-        //method checks contacts in every direction
+        /** method checks contacts with bomb for each 'square' and set attribute 'data' with number of contacts 
+        method checks contacts in every direction */
 
         addNumbers() {
 
             for(let i = 0; i < this.cells.length; i++) {
                 let total = 0;
                 const isLeftEdge = (i % this.width === 0);
-                const isRightEdge = (i % this.width === this.width - 1);
+                const isRightEdge = (i % this.width === this.width - 1); 
                 
                 if(this.cells[i].classList.contains('empty')) {
                     if(i > 0 && !isLeftEdge && this.cells[i - 1].classList.contains('bomb')) total++;
-                    if(i > 9 && !isRightEdge && this.cells[i + 1 - this.width].classList.contains('bomb')) total++;
-                    if(i > 9 && this.cells[i - this.width].classList.contains('bomb')) total++;
-                    if(i > 11 && !isLeftEdge && this.cells[i - 1 - this.width].classList.contains('bomb')) total++;
-                    if(i < 99 && !isRightEdge && this.cells[i + 1].classList.contains('bomb')) total++;
-                    if(i < 90 && !isLeftEdge && this.cells[i - 1 + this.width].classList.contains('bomb')) total++;
-                    if(i < 88 && !isRightEdge && this.cells[i + 1 + this.width].classList.contains('bomb')) total++;
-                    if(i < 90 && this.cells[i + this.width].classList.contains('bomb')) total++
+                    if(i > this.topEdge && !isRightEdge && this.cells[i + 1 - this.width].classList.contains('bomb')) total++;
+                    if(i > this.topEdge && this.cells[i - this.width].classList.contains('bomb')) total++;
+                    if(i > this.topLeftCorner && !isLeftEdge && this.cells[i - 1 - this.width].classList.contains('bomb')) total++;
+                    if(i < this.lastCell && !isRightEdge && this.cells[i + 1].classList.contains('bomb')) total++;
+                    if(i < this.downEdge && !isLeftEdge && this.cells[i - 1 + this.width].classList.contains('bomb')) total++;
+                    if(i < this.downRightCorner && !isRightEdge && this.cells[i + 1 + this.width].classList.contains('bomb')) total++;
+                    if(i < this.downEdge && this.cells[i + this.width].classList.contains('bomb')) total++
 
                     this.cells[i].setAttribute('data', total);
                 }
             }
         },
 
-        //recursion is checking every cell around clicked 'square' to find empty cells and using clicked method 
+        /** recursion is checking every cell around clicked 'square' to find empty cells and using clicked method  */
 
         checkSquare(currentId) {
 
@@ -191,43 +193,43 @@ export default {
                     this.clicked(newSquare)
                 }
 
-                if(currentId > 9 && !isRightEdge) {
+                if(currentId > this.topEdge && !isRightEdge) {
                     const newId = this.cells[parseInt(currentId) + 1 - this.width].id;
                     const newSquare = document.getElementById(newId);
                     this.clicked(newSquare);
                 }
 
-                if(currentId > 9) {
+                if(currentId > this.topEdge) {
                     const newId = this.cells[parseInt(currentId) - this.width].id;
                     const newSquare = document.getElementById(newId);
                     this.clicked(newSquare);
                 }
 
-                if(currentId > 11 && !isLeftEdge) {
+                if(currentId > this.topLeftCorner && !isLeftEdge) {
                     const newId = this.cells[parseInt(currentId) - 1 - this.width].id;
                     const newSquare = document.getElementById(newId);
                     this.clicked(newSquare);
                 }
 
-                if(currentId < 99 && !isRightEdge) {
+                if(currentId < this.lastCell && !isRightEdge) {
                     const newId = this.cells[parseInt(currentId) + 1].id;
                     const newSquare = document.getElementById(newId);
                     this.clicked(newSquare);
                 }
 
-                if(currentId < 90 && !isLeftEdge) {
+                if(currentId < this.downEdge && !isLeftEdge) {
                     const newId = this.cells[parseInt(currentId) - 1 + this.width].id;
                     const newSquare = document.getElementById(newId);
                     this.clicked(newSquare);
                 }
 
-                if(currentId < 88 && !isRightEdge) {
+                if(currentId < this.downRightCorner && !isRightEdge) {
                     const newId = this.cells[parseInt(currentId) + 1 + this.width].id;
                     const newSquare = document.getElementById(newId);
                     this.clicked(newSquare);
                 }
 
-                if(currentId < 90) {
+                if(currentId < this.downEdge) {
                     const newId = this.cells[parseInt(currentId) + this.width].id;
                     const newSquare = document.getElementById(newId);
                     this.clicked(newSquare);
@@ -235,8 +237,8 @@ export default {
             }, 10)
         },
 
-        //method is checking if 'square' with 'bomb' has a flag
-        //if this 2 numbers are equal player won
+        /** method is checking if 'square' with 'bomb' has a flag
+        if this 2 numbers are equal player won */
 
         checkForWin() {
 
@@ -288,7 +290,7 @@ export default {
     }
 
     .bomb {
-        /* background-color: red; */
+        background-color: red;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -342,5 +344,9 @@ export default {
 
     .four {
         color: #060073;
+    }
+
+    .five, .six, .seven, .eight {
+        color: #070077;
     }
 </style>
