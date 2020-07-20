@@ -28,31 +28,31 @@ export default {
             flags: 0,
             isGameOver: false,
             cells: [],
-            // classesToDelete: ['one', 'two', 'three', 'four', 'bomb', 'flag', 'checked']
+            classesToDelete: ['one', 'two', 'three', 'four', 'bomb', 'flag', 'checked']
         }
     },
     methods: {
 
         //method for start new game isn't finished yet
         
-        // startNewGame() {
-        //     for(let i = 0; i < this.cells.length; i++) {
-        //         this.cells[i].classList.remove(...this.classesToDelete)
-        //         this.cells[i].innerText = '';
-        //         this.cells[i].removeAttribute('style'); 
-        //         this.cells[i].removeAttribute('data');
-        //     }
+        startNewGame() {
+            for(let i = 0; i < this.cells.length; i++) {
+                this.cells[i].classList.remove(...this.classesToDelete)
+                this.cells[i].innerText = '';
+                this.cells[i].removeAttribute('style'); 
+                this.cells[i].removeAttribute('data');
+            }
 
-        //     this.isGameOver = false;
-        //     this.flags = 0;
-        //     this.squares = [];
-        //     this.cells = [];
-        //     }
-        //     this.createBoard()
-        //     this.fillCells()
-        // },
+            this.isGameOver = false;
+            this.flags = 0;
+            this.squares = [];
+            this.cells = [];
+            }
+            this.createBoard()
+            this.fillCells()
+        },
 
-        //createBoard creates shuffled array with 'empty' and 'bomb' classes
+        /**createBoard creates shuffled array with 'empty' and 'bomb' classes*/
 
         createBoard() {
 
@@ -63,7 +63,7 @@ export default {
             this.squares = [...shuffledArray]
         },
 
-        //fillCells creates an array from elements which contains class 'square' and then invoke addNumbers method
+        /**fillCells creates an array from elements which contains class 'square' and then invoke addNumbers method */
 
         fillCells() {
 
@@ -73,15 +73,15 @@ export default {
             this.addNumbers()
         },
     
-        //clicked method checks if 'square' is undefined, because method is using in two situations:
-        //after click and in this situation 'square' is event.target
-        //in recursion and in this situation 'square' is from checkSquere method
+        /**clicked method checks if 'square' is undefined, because method is using in two situations:
+        after click and in this situation 'square' is event.target
+        in recursion and in this situation 'square' is from checkSquere method
 
-        //method is checking conditions if is game over or 'square' is checkec or has a flag
-        //if square has a 'bomb' class it's game over
-        //in other situation method is getting 'data' attribute - 'total' 
-        //if clicked 'square' isn't empty, method is adding a total number of contacts with bomb and display it
-        //if clicked 'square' is empty, method invokes checkSquare method - recursion
+        method is checking conditions if is game over or 'square' is checkec or has a flag
+        if square has a 'bomb' class it's game over
+        in other situation method is getting 'data' attribute - 'total' 
+        if clicked 'square' isn't empty, method is adding a total number of contacts with bomb and display it
+        if clicked 'square' is empty, method invokes checkSquare method - recursion */
 
         clicked(square) {   
 
@@ -112,7 +112,7 @@ export default {
             square.classList.add('checked');
         },
 
-        //method gameOver checks every cell and show bomb icon if cell contains 'bomb' class
+        /**method gameOver checks every cell and show bomb icon if cell contains 'bomb' class */
 
         gameOver() {   
 
@@ -128,8 +128,8 @@ export default {
             console.log('Game over');
         },
 
-        //method is adding flag and checks if clicked cell has a flag and if is able to add flag (limit is equal to bomb amount)
-        //addFlag calls checkForWin each time the flag is added
+        /**method is adding flag and checks if clicked cell has a flag and if is able to add flag (limit is equal to bomb amount)
+        addFlag calls checkForWin each time the flag is added */
 
         addFlag() {
 
@@ -151,8 +151,8 @@ export default {
             this.$emit('flags', this.flags)
         },
 
-        //method checks contacts with bomb for each 'square' and set attribute 'data' with number of contacts 
-        //method checks contacts in every direction
+        /**method checks contacts with bomb for each 'square' and set attribute 'data' with number of contacts 
+        method checks contacts in every direction */
 
         addNumbers() {
 
@@ -176,7 +176,7 @@ export default {
             }
         },
 
-        //recursion is checking every cell around clicked 'square' to find empty cells and using clicked method 
+        /**recursion is checking every cell around clicked 'square' to find empty cells and using clicked method  */
 
         checkSquare(currentId) {
 
@@ -235,8 +235,8 @@ export default {
             }, 10)
         },
 
-        //method is checking if 'square' with 'bomb' has a flag
-        //if this 2 numbers are equal player won
+        /**method is checking if 'square' with 'bomb' has a flag
+        if this 2 numbers are equal player won */
 
         checkForWin() {
 
