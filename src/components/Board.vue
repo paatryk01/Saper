@@ -1,6 +1,6 @@
 <template>
     <div id="Board">
-        <div class="grid" :style="{'width': this.gridSize}">
+        <div class="grid">
             <div class="square"
             v-for="(square, index) in squares"
             :id="index"
@@ -23,7 +23,6 @@ export default {
     },
     data() {
         return {
-            gridSize: this.width * this.width,
             squares: [],
             flags: 0,
             isGameOver: false,
