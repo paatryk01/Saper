@@ -27,7 +27,7 @@ export default {
   data() {
     return {
       width: 10,
-      bombAmount: 20,
+      bombAmount: 10,
       isGameOver: false,
       flags: 0
     }

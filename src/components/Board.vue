@@ -1,6 +1,6 @@
 <template>
     <div id="Board">
-        <div class="grid">
+        <div class="grid" :style="{'width': this.gridSize}">
             <div class="square"
             v-for="(square, index) in squares"
             :id="index"
@@ -23,6 +23,7 @@ export default {
     },
     data() {
         return {
+            gridSize: this.width * this.width,
             squares: [],
             flags: 0,
             isGameOver: false,
@@ -81,26 +82,6 @@ export default {
 
             let total = square.getAttribute('data');
 
-
-            //  switch(total) {
-            //         case 1:
-            //             square.classList.add('one');
-            //             break;
-            //         case 2:
-            //             square.classList.add('two');
-            //             break;
-            //         case 3: 
-            //             square.classList.add('three');
-            //             break;
-            //         case 4:
-            //             square.classList.add('four');
-            //             break;
-            //         square.innerHTML = total;
-            //         square.classList.add('checked');
-            //         return
-            //     }
-
-
             const totalClasses = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight'];
 
             if(total > 0 && total <= totalClasses.length) {
@@ -127,7 +108,7 @@ export default {
                 }
             })
             this.$emit('gameOverState', this.isGameOver);
-            console.log('Game over');
+            alert('Game over');
         },
 
         /** method is adding flag and checks if clicked cell has a flag and if is able to add flag (limit is equal to bomb amount)
