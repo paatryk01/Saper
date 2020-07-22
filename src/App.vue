@@ -2,13 +2,11 @@
   <div id="app">
     <Header 
       :bombAmount='bombAmount'
-      :isGameOver='isGameOver'
       :flags='flags'
     />
     <Board 
       :width='width'
       :bombAmount='bombAmount'
-      @gameOverState='updateState'
       @flags='updateFlags'
     />
   </div>
@@ -26,17 +24,12 @@ export default {
   },
   data() {
     return {
-      width: 10,
+      width: 20,
       bombAmount: 10,
-      isGameOver: false,
       flags: 0
     }
   },
   methods: {
-    updateState(state) { 
-      this.isGameOver = state;
-    },
-
     updateFlags(flags) {
       this.flags = flags;
     }

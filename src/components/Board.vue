@@ -1,6 +1,7 @@
 <template>
     <div id="Board">
-        <div class="grid">
+        <h2 class='gameState' v-text='this.gameState' />
+        <div class="grid" :style=" { width: `${gridSize}px`, height: `${gridSize}px` } ">
             <div class="square"
             v-for="(square, index) in squares"
             :id="index"
@@ -23,6 +24,8 @@ export default {
     },
     data() {
         return {
+            gameState: 'Good Luck! 🍀',
+            gridSize: this.width * this.width * 2,
             squares: [],
             flags: 0,
             isGameOver: false,
@@ -94,22 +97,6 @@ export default {
             square.classList.add('checked');
         },
 
-        /** method gameOver checks every cell and show bomb icon if cell contains 'bomb' class */
-
-        gameOver() {   
-
-            this.isGameOver = true;
-
-            this.cells.forEach((square) => {
-                if(square.classList.contains('bomb')) {
-                    square.innerHTML = '💣';
-                    square.style = "background-color: #ff0000"
-                }
-            })
-            this.$emit('gameOverState', this.isGameOver);
-            alert('Game over');
-        },
-
         /** method is adding flag and checks if clicked cell has a flag and if is able to add flag (limit is equal to bomb amount)
         addFlag calls checkForWin each time the flag is added */
 
@@ -118,7 +105,7 @@ export default {
             let square = event.target;
             
             if(this.isGameOver) return
-            if(!square.classList.contains('checked') && (this.flags < this.bombAmount)) {
+            if(!square.classList.contains('checked') && (this.flags <= this.bombAmount)) {
                 if(!square.classList.contains('flag')) {
                     square.classList.add('flag');
                     square.innerHTML = '🚩';
@@ -217,6 +204,21 @@ export default {
             }, 10)
         },
 
+        /** method gameOver checks every cell and show bomb icon if cell contains 'bomb' class */
+
+        gameOver() {   
+
+            this.isGameOver = true;
+            this.gameState = 'You lost, try again! 💥'
+
+            this.cells.forEach((square) => {
+                if(square.classList.contains('bomb')) {
+                    square.innerHTML = '💣';
+                    square.style = "background-color: #ff0000"
+                }
+            })
+        },
+
         /** method is checking if 'square' with 'bomb' has a flag
         if this 2 numbers are equal player won */
 
@@ -231,8 +233,8 @@ export default {
             }
 
             if(matches === this.bombAmount) {
-                alert('congratulations! you are a winner');
                 this.isGameOver = true;
+                this.gameState = "You are a winner! 🏆"
             }
         }
     },
@@ -249,7 +251,7 @@ export default {
 <style>
     .grid {
         height: 400px;
-        width: 400px;
+        /* width: 400px; */
         display: flex;
         flex-wrap: wrap;
         background-color:rgb(235, 230, 223);
@@ -257,6 +259,7 @@ export default {
         left: 50%;
         transform: translateX(-50%);
         top: 240px;
+        margin-bottom: 200px;
     }
 
     .square {
@@ -267,6 +270,10 @@ export default {
         border-color: #eee #999 #999 #eee;
         background-color: #ccc;
         font-weight: 600;
+    }
+
+    .gameState {
+        text-align: center;
     }
 
     .bomb {
@@ -329,4 +336,5 @@ export default {
     .five, .six, .seven, .eight {
         color: #070077;
     }
+
 </style>
