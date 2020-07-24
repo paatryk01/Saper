@@ -24,8 +24,8 @@ export default {
   },
   data() {
     return {
-      width: 20,
-      bombAmount: 10,
+      width: 10,
+      bombAmount: 20,
       flags: 0
     }
   },

@@ -1,7 +1,15 @@
 <template>
     <div id="Board">
+        <form class="options" @submit.prevent='prepareNewGame'>Size
+            <input type="number" class="input-number" 
+            :min='fieldSizeMin' 
+            :max='fieldSizeMax'
+            v-model.number='newWidth'>
+            <button>New game</button>
+        </form>
+        <!-- <button class='startButton' @click='prepareNewGame'>New game</button> -->
         <h2 class='gameState' v-text='this.gameState' />
-        <div class="grid" :style=" { width: `${gridSize}px`, height: `${gridSize}px` } ">
+        <div class="grid">
             <div class="square"
             v-for="(square, index) in squares"
             :id="index"
@@ -24,25 +32,41 @@ export default {
     },
     data() {
         return {
+            newWidth:0,
+            fieldSizeMin: 5,
+            fieldSizeMax: 20,
+            gridSize: this.width * 40,
             gameState: 'Good Luck! 🍀',
-            gridSize: this.width * this.width * 2,
             squares: [],
             flags: 0,
             isGameOver: false,
             cells: [],
             topEdge: this.width - 1,
-            topLeftCorner: this.width + 1,
+            topLeftCorner: this.width,
             lastCell: (this.width * this.width) - 1,
             downEdge: (this.width * this.width) - this.width,
-            downRightCorner: (this.width * this.width) - this.width - 1
+            downRightCorner: (this.width * this.width) - this.width - 1,
+            classesToDelete: ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'bomb', 'flag', 'checked']
         }
     },
     methods: {
+        
+        /** method to restart game */
+
+        async prepareNewGame() {
+            this.width = this.newWidth;
+            const grid = document.querySelector('.grid');
+            
+            grid.style.width = this.width * 40 + 'px'
+            await this.clearHelper();
+            await this.createBoard();
+            await this.fillCells();
+        },
 
         /** createBoard creates shuffled array with 'empty' and 'bomb' classes */
 
         createBoard() {
-
+            
             const bombsArray = Array(this.bombAmount).fill('bomb');
             const emptyArray = Array(this.width * this.width - this.bombAmount).fill('empty');
             const gameArray = emptyArray.concat(bombsArray);
@@ -236,6 +260,30 @@ export default {
                 this.isGameOver = true;
                 this.gameState = "You are a winner! 🏆"
             }
+        },
+
+        /** method to clear all board to start new game */
+
+        clearHelper() {
+            for(let i = 0; i < this.cells.length; i++) {
+                this.cells[i].classList.remove(...this.classesToDelete)
+                this.cells[i].innerText = '';
+                this.cells[i].removeAttribute('style'); 
+                this.cells[i].removeAttribute('data');
+            }
+            
+            this.topEdge = this.width - 1,
+            this.topLeftCorner = this.width,
+            this.lastCell = (this.width * this.width) - 1,
+            this.downEdge = (this.width * this.width) - this.width,
+            this.downRightCorner = (this.width * this.width) - this.width - 1,
+
+            this.gameState = 'Good Luck! 🍀'
+            this.squares = [];
+            this.cells = [];
+            this.flags = 0;
+            this.$emit('flags', this.flags);
+            this.isGameOver = false;
         }
     },
     created() {
@@ -250,8 +298,7 @@ export default {
 
 <style>
     .grid {
-        height: 400px;
-        /* width: 400px; */
+        width: 400px;
         display: flex;
         flex-wrap: wrap;
         background-color:rgb(235, 230, 223);
@@ -301,9 +348,9 @@ export default {
     }
 
     .startButton {
-        position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
+        position: relative;
+        display: flex;
+        margin: 0 auto;
         background-color: #ffff00;
         color: black;
         border: 1px solid #000;
@@ -335,6 +382,16 @@ export default {
 
     .five, .six, .seven, .eight {
         color: #070077;
+    }
+
+    .options {
+        display: flex;
+        justify-content: center;
+        font-weight: 600;
+    }
+
+    .options input{
+        margin: 0 15px
     }
 
 </style>
