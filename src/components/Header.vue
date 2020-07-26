@@ -1,7 +1,6 @@
 <template>
   <div>
     <h1>MineSweeper</h1>
-    <!-- <h3>Bombs: {{ bombAmount }} 💣</h3> -->
     <h3>Marked fields: {{ flags }} 🚩 / {{ bombAmount }} 💣</h3>
   </div>
 </template>
@@ -18,6 +17,10 @@ export default {
 
 <style scoped>
   
+  h1 {
+    font-size: 40px;
+  }
+
   h1, h3{
     text-align: center;
   }

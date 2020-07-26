@@ -5,7 +5,7 @@
       :flags='flags'
     />
     <Board 
-      :width='width'
+
       :bombAmount='bombAmount'
       @flags='updateFlags'
     />
@@ -24,7 +24,7 @@ export default {
   },
   data() {
     return {
-      width: 10,
+      // width: 10,
       bombAmount: 20,
       flags: 0
     }
@@ -42,4 +42,15 @@ export default {
 
 <style>
 
+  @import url('https://fonts.googleapis.com/css2?family=Righteous&display=swap');
+
+  body {
+    background: linear-gradient(160deg, #a6e0d9, #3dac9f);
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: 1200px;
+    font-family: 'Righteous', cursive;
+    text-transform: uppercase;
+  }
+  
 </style>

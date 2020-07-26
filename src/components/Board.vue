@@ -4,10 +4,9 @@
             <input type="number" class="input-number" 
             :min='fieldSizeMin' 
             :max='fieldSizeMax'
-            v-model.number='newWidth'>
-            <button>New game</button>
+            v-model.number='width'>
+            <button class="startButton">New game</button>
         </form>
-        <!-- <button class='startButton' @click='prepareNewGame'>New game</button> -->
         <h2 class='gameState' v-text='this.gameState' />
         <div class="grid">
             <div class="square"
@@ -27,15 +26,13 @@
 export default {
     name: 'Board',
     props: {
-        width: Number, 
         bombAmount: Number
     },
     data() {
         return {
-            newWidth:0,
+            width:10,
             fieldSizeMin: 5,
             fieldSizeMax: 20,
-            gridSize: this.width * 40,
             gameState: 'Good Luck! 🍀',
             squares: [],
             flags: 0,
@@ -54,7 +51,7 @@ export default {
         /** method to restart game */
 
         async prepareNewGame() {
-            this.width = this.newWidth;
+
             const grid = document.querySelector('.grid');
             
             grid.style.width = this.width * 40 + 'px'
@@ -306,7 +303,7 @@ export default {
         left: 50%;
         transform: translateX(-50%);
         top: 240px;
-        margin-bottom: 200px;
+        margin: 30px 0px 150px
     }
 
     .square {
@@ -316,7 +313,11 @@ export default {
         border: 2px solid;
         border-color: #eee #999 #999 #eee;
         background-color: #ccc;
-        font-weight: 600;
+        font-weight: 500;
+    }
+
+    .square:hover {
+        background-color: #ddd;
     }
 
     .gameState {
@@ -324,7 +325,7 @@ export default {
     }
 
     .bomb {
-        background-color: red;
+        /* background-color: red; */
         display: flex;
         justify-content: center;
         align-items: center;
@@ -348,12 +349,11 @@ export default {
     }
 
     .startButton {
-        position: relative;
-        display: flex;
-        margin: 0 auto;
-        background-color: #ffff00;
-        color: black;
-        border: 1px solid #000;
+        font-family: 'Righteous';
+        text-transform: uppercase;
+        background-color: transparent;
+        color: #000;
+        border: 2px solid #000;
         padding: 6px 12px;
     }
 
@@ -362,6 +362,7 @@ export default {
         transition: 1s;
         background-color: #000;
         color: #fff;
+        border-radius: 0px 8px 0px 8px;
     }
 
     .one {
@@ -391,7 +392,13 @@ export default {
     }
 
     .options input{
-        margin: 0 15px
+        margin: 0 15px;
+        background: transparent;
+        border: 0px;
+        border-bottom: 2px solid #000;
+        font-family: 'Righteous';
+        font-size: 16px;
+        text-align: center;
     }
 
 </style>
