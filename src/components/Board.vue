@@ -111,9 +111,16 @@ export default {
                 square.classList.add('checked');
                 square.classList.add(totalClasses[total-1])
                 square.innerHTML = total;
+                if(total > 2) {
+                    this.gameState = 'So close...'
+                }
                 return
             }
 
+            if(!square.classList.contains('bomb')) {
+                this.gameState = 'Nice try!'
+            }
+            
             this.checkSquare(currentId);
             square.classList.add('checked');
         },
@@ -256,6 +263,7 @@ export default {
             if(matches === this.bombAmount) {
                 this.isGameOver = true;
                 this.gameState = "You are a winner! 🏆"
+                alert('Congratulations, you are a winner! 🏆')
             }
         },
 

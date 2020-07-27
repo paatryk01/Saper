@@ -5,7 +5,6 @@
       :flags='flags'
     />
     <Board 
-
       :bombAmount='bombAmount'
       @flags='updateFlags'
     />
@@ -24,7 +23,6 @@ export default {
   },
   data() {
     return {
-      // width: 10,
       bombAmount: 20,
       flags: 0
     }
