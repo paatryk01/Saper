@@ -1,10 +1,16 @@
 <template>
     <div id="Board">
-        <form class="options" @submit.prevent='prepareNewGame'>Size
+        <form class="options" @submit.prevent='prepareNewGame'>
+            <p>Size</p>
             <input type="number" class="input-number" 
             :min='fieldSizeMin' 
             :max='fieldSizeMax'
             v-model.number='width'>
+            <p>Bombs Amount</p>
+            <input type="number" class="input-number"
+            :min='bombsMin' 
+            :max='bombsMax'
+            v-model.number='bombsAmount'>
             <button class="startButton">New game</button>
         </form>
         <h2 class='gameState' v-text='this.gameState' />
@@ -23,27 +29,28 @@
 </template>
 
 <script>
+
 export default {
     name: 'Board',
-    props: {
-        bombAmount: Number
-    },
     data() {
         return {
             width:10,
             fieldSizeMin: 5,
             fieldSizeMax: 20,
+            bombsMin: 5,
+            bombsMax: 40,
+            bombsAmount: 10,
             gameState: 'Good Luck! 🍀',
             squares: [],
             flags: 0,
             isGameOver: false,
             cells: [],
-            topEdge: this.width - 1,
-            topLeftCorner: this.width,
-            lastCell: (this.width * this.width) - 1,
-            downEdge: (this.width * this.width) - this.width,
-            downRightCorner: (this.width * this.width) - this.width - 1,
-            classesToDelete: ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'bomb', 'flag', 'checked']
+            classesToDelete: ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'bomb', 'flag', 'checked'],
+            topEdge: this.topEdge,
+            topLeftCorner: this.topLeftCorner,
+            lastCell: this.lastCell,
+            downEdge: this.downEdge,
+            downRightCorner: this.downRightCorner    
         }
     },
     methods: {
@@ -53,22 +60,32 @@ export default {
         async prepareNewGame() {
 
             const grid = document.querySelector('.grid');
+
+            if(this.bombsAmount < this.width * this.width) {
+                this.$emit('bombsAmount', this.bombsAmount);
+            } else {
+                alert(`You can't set more bombs than fields.`)
+                this.bombsAmount = 10;
+            }
             
             grid.style.width = this.width * 40 + 'px'
             await this.clearHelper();
             await this.createBoard();
             await this.fillCells();
+            
         },
 
         /** createBoard creates shuffled array with 'empty' and 'bomb' classes */
 
         createBoard() {
             
-            const bombsArray = Array(this.bombAmount).fill('bomb');
-            const emptyArray = Array(this.width * this.width - this.bombAmount).fill('empty');
+            const bombsArray = Array(this.bombsAmount).fill('bomb');
+            const emptyArray = Array(this.width * this.width - this.bombsAmount).fill('empty');
             const gameArray = emptyArray.concat(bombsArray);
             const shuffledArray = gameArray.sort(() => Math.random() - 0.5);
             this.squares = [...shuffledArray]
+
+            this.setEdges()
         },
 
         /** fillCells creates an array from elements which contains class 'square' and then invoke addNumbers method */
@@ -111,7 +128,7 @@ export default {
                 square.classList.add('checked');
                 square.classList.add(totalClasses[total-1])
                 square.innerHTML = total;
-                if(total > 2) {
+                if(total > 3) {
                     this.gameState = 'So close...'
                 }
                 return
@@ -133,7 +150,7 @@ export default {
             let square = event.target;
             
             if(this.isGameOver) return
-            if(!square.classList.contains('checked') && (this.flags <= this.bombAmount)) {
+            if(!square.classList.contains('checked') && (this.flags <= this.bombsAmount)) {
                 if(!square.classList.contains('flag')) {
                     square.classList.add('flag');
                     square.innerHTML = '🚩';
@@ -260,7 +277,7 @@ export default {
                 }
             }
 
-            if(matches === this.bombAmount) {
+            if(matches === this.bombsAmount) {
                 this.isGameOver = true;
                 this.gameState = "You are a winner! 🏆"
                 alert('Congratulations, you are a winner! 🏆')
@@ -277,18 +294,23 @@ export default {
                 this.cells[i].removeAttribute('data');
             }
             
-            this.topEdge = this.width - 1,
-            this.topLeftCorner = this.width,
-            this.lastCell = (this.width * this.width) - 1,
-            this.downEdge = (this.width * this.width) - this.width,
-            this.downRightCorner = (this.width * this.width) - this.width - 1,
+            this.setEdges();
 
             this.gameState = 'Good Luck! 🍀'
             this.squares = [];
             this.cells = [];
             this.flags = 0;
-            this.$emit('flags', this.flags);
             this.isGameOver = false;
+
+            this.$emit('flags', this.flags);   
+        },
+        
+        setEdges() {
+            this.topEdge = this.width - 1;
+            this.topLeftCorner =  this.width;
+            this.lastCell = (this.width * this.width) - 1;
+            this.downEdge = (this.width * this.width) - this.width;
+            this.downRightCorner = (this.width * this.width) - this.width - 1;
         }
     },
     created() {

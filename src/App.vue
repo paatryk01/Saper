@@ -1,12 +1,12 @@
 <template>
     <div id="app">
         <Header 
-        :bombAmount='bombAmount'
+        :bombsAmount='bombsAmount'
         :flags='flags'
         />
         <Board 
-        :bombAmount='bombAmount'
         @flags='updateFlags'
+        @bombsAmount='updateBombsAmount'
         />
     </div>
 </template>
@@ -23,14 +23,18 @@
         },
         data() {
             return {
-                bombAmount: 20,
-                flags: 0
+                flags: 0,
+                bombsAmount: 10
             }
         },
         methods: {
             updateFlags(flags) {
                 this.flags = flags;
+            },
+            updateBombsAmount(bombsAmount) {
+                this.bombsAmount = bombsAmount;
             }
+
         },
         created() {
 

@@ -1,18 +1,21 @@
 <template>
     <div>
         <h1>MineSweeper</h1>
-        <h3>Marked fields: {{ flags }} 🚩 / {{ bombAmount }} 💣</h3>
+        <h3>Marked fields: {{ flags }} 🚩 / {{ bombsAmount }} 💣</h3>
     </div>
 </template>
 
 <script>
-    export default {
+
+
+export default {
     name: 'Header',
     props: {
-        bombAmount: Number,
+        bombsAmount: Number,
         flags: Number
-        }
-    }
+    },
+}
+
 </script>
 
 <style scoped>
