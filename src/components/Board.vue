@@ -29,9 +29,11 @@
 </template>
 
 <script>
-
 export default {
     name: 'Board',
+    props: {
+        states: Object
+    },
     data() {
         return {
             width:10,
@@ -40,7 +42,7 @@ export default {
             bombsMin: 5,
             bombsMax: 40,
             bombsAmount: 10,
-            gameState: 'Good Luck! 🍀',
+            gameState: this.states.start,
             squares: [],
             flags: 0,
             isGameOver: false,
@@ -56,11 +58,8 @@ export default {
     methods: {
         
         /** method to restart game */
-
         async prepareNewGame() {
-
             const grid = document.querySelector('.grid');
-
             if(this.bombsAmount < this.width * this.width) {
                 this.$emit('bombsAmount', this.bombsAmount);
             } else {
@@ -74,9 +73,7 @@ export default {
             await this.fillCells();
             
         },
-
         /** createBoard creates shuffled array with 'empty' and 'bomb' classes */
-
         createBoard() {
             
             const bombsArray = Array(this.bombsAmount).fill('bomb');
@@ -84,69 +81,52 @@ export default {
             const gameArray = emptyArray.concat(bombsArray);
             const shuffledArray = gameArray.sort(() => Math.random() - 0.5);
             this.squares = [...shuffledArray]
-
             this.setEdges()
         },
-
         /** fillCells creates an array from elements which contains class 'square' and then invoke addNumbers method */
-
         fillCells() {
-
             const elements = document.getElementsByClassName('square');
             this.cells = [...elements];
-
             this.addNumbers()
         },
     
         /** clicked method checks if 'square' is undefined, because method is using in two situations:
         after click and in this situation 'square' is event.target
         in recursion and in this situation 'square' is from checkSquere method
-
         method is checking conditions if is game over or 'square' is checkec or has a flag
         if square has a 'bomb' class it's game over
         in other situation method is getting 'data' attribute - 'total' 
         if clicked 'square' isn't empty, method is adding a total number of contacts with bomb and display it
         if clicked 'square' is empty, method invokes checkSquare method - recursion */
-
         clicked(square) {   
-
             if(square === undefined) {
                 square = event.target;
             }
-
             let currentId = square.id;
-
             if(this.isGameOver) return;
             if(square.classList.contains('checked') || square.classList.contains('flag')) return
             if(square.classList.contains('bomb')) this.gameOver()
-
             let total = square.getAttribute('data');
-
             const totalClasses = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight'];
-
             if(total > 0 && total <= totalClasses.length) {
                 square.classList.add('checked');
                 square.classList.add(totalClasses[total-1])
                 square.innerHTML = total;
                 if(total > 3) {
-                    this.gameState = 'So close...'
+                    this.gameState = this.states.soClose;
                 }
                 return
             }
-
             if(!square.classList.contains('bomb')) {
-                this.gameState = 'Nice try!'
+                this.gameState = this.states.niceTry;
             }
             
             this.checkSquare(currentId);
             square.classList.add('checked');
         },
-
         /** method is adding flag and checks if clicked cell has a flag and if is able to add flag (limit is equal to bomb amount)
         addFlag calls checkForWin each time the flag is added */
-
         addFlag() {
-
             let square = event.target;
             
             if(this.isGameOver) return
@@ -164,12 +144,9 @@ export default {
             }
             this.$emit('flags', this.flags)
         },
-
         /** method checks contacts with bomb for each 'square' and set attribute 'data' with number of contacts 
         method checks contacts in every direction */
-
         addNumbers() {
-
             for(let i = 0; i < this.cells.length; i++) {
                 let total = 0;
                 const isLeftEdge = (i % this.width === 0);
@@ -184,19 +161,14 @@ export default {
                     if(i < this.downEdge && !isLeftEdge && this.cells[i - 1 + this.width].classList.contains('bomb')) total++;
                     if(i < this.downRightCorner && !isRightEdge && this.cells[i + 1 + this.width].classList.contains('bomb')) total++;
                     if(i < this.downEdge && this.cells[i + this.width].classList.contains('bomb')) total++
-
                     this.cells[i].setAttribute('data', total);
                 }
             }
         },
-
         /** recursion is checking every cell around clicked 'square' to find empty cells and using clicked method  */
-
         checkSquare(currentId) {
-
             const isLeftEdge = (currentId % this.width === 0);
             const isRightEdge = (currentId % this.width === this.width - 1);
-
             setTimeout(() => {
                 
                 if(currentId > 0 && !isLeftEdge) {
@@ -204,43 +176,36 @@ export default {
                     const newSquare = document.getElementById(newId);
                     this.clicked(newSquare)
                 }
-
                 if(currentId > this.topEdge && !isRightEdge) {
                     const newId = this.cells[parseInt(currentId) + 1 - this.width].id;
                     const newSquare = document.getElementById(newId);
                     this.clicked(newSquare);
                 }
-
                 if(currentId > this.topEdge) {
                     const newId = this.cells[parseInt(currentId) - this.width].id;
                     const newSquare = document.getElementById(newId);
                     this.clicked(newSquare);
                 }
-
                 if(currentId > this.topLeftCorner && !isLeftEdge) {
                     const newId = this.cells[parseInt(currentId) - 1 - this.width].id;
                     const newSquare = document.getElementById(newId);
                     this.clicked(newSquare);
                 }
-
                 if(currentId < this.lastCell && !isRightEdge) {
                     const newId = this.cells[parseInt(currentId) + 1].id;
                     const newSquare = document.getElementById(newId);
                     this.clicked(newSquare);
                 }
-
                 if(currentId < this.downEdge && !isLeftEdge) {
                     const newId = this.cells[parseInt(currentId) - 1 + this.width].id;
                     const newSquare = document.getElementById(newId);
                     this.clicked(newSquare);
                 }
-
                 if(currentId < this.downRightCorner && !isRightEdge) {
                     const newId = this.cells[parseInt(currentId) + 1 + this.width].id;
                     const newSquare = document.getElementById(newId);
                     this.clicked(newSquare);
                 }
-
                 if(currentId < this.downEdge) {
                     const newId = this.cells[parseInt(currentId) + this.width].id;
                     const newSquare = document.getElementById(newId);
@@ -248,14 +213,10 @@ export default {
                 }
             }, 10)
         },
-
         /** method gameOver checks every cell and show bomb icon if cell contains 'bomb' class */
-
         gameOver() {   
-
             this.isGameOver = true;
-            this.gameState = 'You lost, try again! 💥'
-
+            this.gameState = this.states.lost;
             this.cells.forEach((square) => {
                 if(square.classList.contains('bomb')) {
                     square.innerHTML = '💣';
@@ -263,29 +224,22 @@ export default {
                 }
             })
         },
-
         /** method is checking if 'square' with 'bomb' has a flag
         if this 2 numbers are equal player won */
-
         checkForWin() {
-
             let matches = 0;
-
             for(let i = 0; i < this.cells.length; i++) {
                 if(this.cells[i].classList.contains('flag') && this.cells[i].classList.contains('bomb')) {
                     matches++;
                 }
             }
-
             if(matches === this.bombsAmount) {
                 this.isGameOver = true;
-                this.gameState = "You are a winner! 🏆"
+                this.gameState = this.states.won;
                 alert('Congratulations, you are a winner! 🏆')
             }
         },
-
         /** method to clear all board to start new game */
-
         clearHelper() {
             for(let i = 0; i < this.cells.length; i++) {
                 this.cells[i].classList.remove(...this.classesToDelete)
@@ -295,13 +249,11 @@ export default {
             }
             
             this.setEdges();
-
-            this.gameState = 'Good Luck! 🍀'
+            this.gameState = this.states.start;
             this.squares = [];
             this.cells = [];
             this.flags = 0;
             this.isGameOver = false;
-
             this.$emit('flags', this.flags);   
         },
         
@@ -335,7 +287,6 @@ export default {
         top: 240px;
         margin: 30px 0px 150px
     }
-
     .square {
         height: 40px;
         width: 40px;
@@ -345,22 +296,18 @@ export default {
         background-color: #ccc;
         font-weight: 500;
     }
-
     .square:hover {
         background-color: #ddd;
     }
-
     .gameState {
         text-align: center;
     }
-
     .bomb {
         /* background-color: red; */
         display: flex;
         justify-content: center;
         align-items: center;
     }
-
     .checked {
         color: #0000ff;
         display: flex;
@@ -371,13 +318,11 @@ export default {
         border-color: #999;
         padding: 1px;
     }
-
     .flag {
         display:flex;
         justify-content: center;
         align-items: center;
     }
-
     .startButton {
         font-family: 'Righteous';
         text-transform: uppercase;
@@ -386,7 +331,6 @@ export default {
         border: 2px solid #000;
         padding: 6px 12px;
     }
-
     .startButton:hover {
         cursor: pointer;
         transition: 1s;
@@ -394,33 +338,26 @@ export default {
         color: #fff;
         border-radius: 0px 8px 0px 8px;
     }
-
     .one {
         color: #0000ff;
     }
-
     .two {
         color: #008500;
     }
-
     .three {
         color: #ff0000;
     }
-
     .four {
         color: #060073;
     }
-
     .five, .six, .seven, .eight {
         color: #070077;
     }
-
     .options {
         display: flex;
         justify-content: center;
         font-weight: 600;
     }
-
     .options input{
         margin: 0 15px;
         background: transparent;
@@ -430,5 +367,4 @@ export default {
         font-size: 16px;
         text-align: center;
     }
-
 </style>

@@ -4,7 +4,8 @@
         :bombsAmount='bombsAmount'
         :flags='flags'
         />
-        <Board 
+        <Board
+        :states='states'
         @flags='updateFlags'
         @bombsAmount='updateBombsAmount'
         />
@@ -24,7 +25,14 @@
         data() {
             return {
                 flags: 0,
-                bombsAmount: 10
+                bombsAmount: 10,
+                states: {
+                    start: "Good Luck! 🍀",
+                    lost: "You lost, try again! 💥",
+                    won: "You are a winner! 🏆",
+                    soClose: "So close...",
+                    niceTry: "Nice try!"
+                }
             }
         },
         methods: {
